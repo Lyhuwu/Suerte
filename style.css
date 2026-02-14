@@ -1,269 +1,180 @@
-/* style.css - Diseño Original Restaurado */
+// --- 1. LISTA DE CUPONES (19 opciones) ---
+const listaOriginal = [
+    "Una cita en el cine 🎬",
+    "Dejarte ganar en lo que sea (nee mi equipo) 🎮",
+    "Unos besitos 💋",
+    "Unos besotes 😘",
+    "Un abachito💞",
+    "Cita en cafetería ☕",
+    "Cita en el acuario 🐧",
+    "Un muamuamuamua 👄",
+    "Una cita a donde queya ✨",
+    "Eliminar al gallo de pelea 🐓🚫",
+    "Un ah ah ah ah 🔥",
+    "Tu y yo toda la eternidad ♾️",
+    "Evasión de pelea: repele la pelea y debemos amarnos mucho sisisis 🛡️💖",
+    "Vale por abachote 🫂",
+    "Comida favorita 🍔",
+    "Romper distancia entre nosotras yadiosmio testaño ✈️❤️",
+    "Ver una peli juntitas💖",
+    "Un masajito 💆",
+    "Una tarde juntitas 🌇"
+];
 
-body {
-    /* Fondo de GIF */
-    background-image: url('fotos/fondo_magico.gif');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    /* Si el GIF no carga, se verá este degradado rosa */
-    background-color: #ffdde1;
+// Variables de estado
+let disponibles = [];
+let cuponActualTexto = "";
+let indiceParaBorrar = null;
 
-    font-family: 'Fredoka', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
-}
+// --- INICIALIZACIÓN ---
+document.addEventListener('DOMContentLoaded', () => {
+    cargarCuponesGuardados();
+    disponibles = [...listaOriginal]; // Llenar la baraja al inicio
+});
 
-/* Contenedor principal */
-.cuponera-container {
-    text-align: center;
-    background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
-    backdrop-filter: blur(5px); /* Efecto borroso */
-    padding: 30px 20px;
-    border-radius: 25px;
-    border: 4px solid #fff;
-    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.25);
-    width: 100%;
-    max-width: 380px;
-    margin-bottom: 30px;
-    position: relative;
-    z-index: 10;
-}
+// --- FUNCIÓN PRINCIPAL: REVELAR GALLETA ---
+function revelarCupon() {
+    // 1. Efecto visual instantáneo: las galletas se desvanecen un poco
+    const contenedorGalletas = document.getElementById('galletas-flex');
+    contenedorGalletas.style.opacity = "0.4";
+    contenedorGalletas.style.pointerEvents = "none"; // Evita que pique otra mientras carga
 
-h1 {
-    font-family: 'Pacifico', cursive;
-    color: #ff4d6d;
-    font-size: 2rem;
-    margin: 0 0 10px 0;
-    text-shadow: 2px 2px 0px rgba(255, 200, 200, 0.5);
-}
-
-.instrucciones {
-    color: #885566;
-    font-size: 1rem;
-    margin-bottom: 25px;
-}
-
-/* --- GALLETAS --- */
-#galletas-flex {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: 20px 0;
-}
-
-.cookie {
-    font-size: 65px;
-    cursor: pointer;
-    display: block;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-}
-
-.cookie-wrapper {
-    transition: transform 0.2s;
-    animation: flotar 3s ease-in-out infinite;
-}
-.cookie-wrapper:nth-child(1) { animation-delay: 0s; }
-.cookie-wrapper:nth-child(2) { animation-delay: 0.5s; }
-.cookie-wrapper:nth-child(3) { animation-delay: 1s; }
-
-@keyframes flotar {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
-
-/* --- TICKET --- */
-.ticket {
-    background: #ff4d6d;
-    color: white;
-    padding: 5px;
-    border-radius: 15px;
-    margin: 20px auto;
-    transform: rotate(-1deg);
-    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 8px 20px rgba(255, 77, 109, 0.3);
-}
-
-.ticket-content {
-    border: 2px dashed rgba(255, 255, 255, 0.5);
-    border-radius: 12px;
-    padding: 20px;
-    background: #ff4d6d;
-}
-
-.ticket-header { font-size: 0.8rem; letter-spacing: 2px; margin: 0; opacity: 0.9; text-transform: uppercase; }
-h3#texto-cupon { font-size: 1.4rem; margin: 15px 0; line-height: 1.3; }
-.linea-punteada { border-bottom: 2px dashed rgba(255,255,255,0.4); margin: 15px 0; }
-.ticket-footer { font-size: 0.75rem; font-style: italic; opacity: 0.9; margin: 0; }
-
-/* --- BOTONES --- */
-.botones-accion {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.btn-guardar, .btn-confirmar {
-    background: #ff4d6d;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 50px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1rem;
-    box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);
-}
-
-.btn-reset {
-    background: white;
-    color: #ff4d6d;
-    border: 2px solid #ffb3c1;
-    padding: 10px;
-    border-radius: 50px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* --- BILLETERA --- */
-.billetera-container {
-    background: rgba(255, 255, 255, 0.8);
-    width: 100%;
-    max-width: 380px;
-    padding: 20px;
-    border-radius: 20px;
-    margin-bottom: 50px;
-}
-
-.billetera-container h2 {
-    color: #ff4d6d;
-    font-size: 1.2rem;
-    text-align: center;
-    margin-top: 0;
-}
-
-.mini-ticket {
-    background: white;
-    border-left: 5px solid #ff4d6d;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.btn-usar {
-    background: #ff4d6d;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    margin-left: 10px;
-    cursor: pointer;
-}
-
-.btn-borrar-todo {
-    background: none;
-    border: none;
-    color: #999;
-    font-size: 0.8rem;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-/* --- VENTANA MODAL (POP-UP) --- */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    backdrop-filter: blur(4px);
-}
-
-.modal-content {
-    background: white;
-    padding: 25px;
-    border-radius: 25px;
-    text-align: center;
-    max-width: 85%;
-    width: 320px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    border: 4px solid #ffb3c1;
-    animation: popIn 0.3s ease-out;
-}
-
-.modal-gif {
-    width: 100%;
-    max-width: 180px;
-    border-radius: 15px;
-    margin-bottom: 15px;
-}
-
-.modal-texto {
-    font-size: 0.95rem;
-    color: #555;
-    margin-bottom: 20px;
-    line-height: 1.5;
-}
-
-.modal-botones {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.btn-cancelar {
-    background: #f0f0f0;
-    color: #666;
-    border: none;
-    padding: 10px;
-    border-radius: 50px;
-    cursor: pointer;
-}
-
-.hidden { display: none !important; }
-@keyframes popIn { from { transform: scale(0.5) rotate(-5deg); opacity: 0; } to { transform: scale(1) rotate(-1deg); opacity: 1; } }
-/* --- NUEVA ANIMACIÓN DE APARICIÓN DEL CUPÓN --- */
-
-/* Definimos la animación "expandir" */
-@keyframes expandirCupon {
-    0% {
-        opacity: 0;
-        transform: scale(0.5) translateY(30px); /* Empieza pequeño y más abajo */
+    // 2. Sonido del CRACK instantáneo
+    const sonidoCrack = document.getElementById('sonido-galleta');
+    if (sonidoCrack) {
+        sonidoCrack.currentTime = 0;
+        sonidoCrack.play();
     }
-    70% {
-         transform: scale(1.05); /* Un pequeño rebote (se pasa del tamaño normal) */
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0); /* Termina en su tamaño normal */
+
+    // 3. RETRASO MÁGICO (400ms) para la sorpresa
+    setTimeout(() => {
+        // Elegir cupón (evitando repetidos)
+        if (disponibles.length === 0) disponibles = [...listaOriginal];
+        const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
+        cuponActualTexto = disponibles[indiceAleatorio];
+        disponibles.splice(indiceAleatorio, 1);
+
+        // Actualizar interfaz
+        document.getElementById('texto-cupon').innerText = cuponActualTexto;
+        contenedorGalletas.classList.add('hidden');
+        document.getElementById('cupon-resultado').classList.remove('hidden');
+        
+        // Resetear botones
+        const btnGuardar = document.getElementById('btn-guardar');
+        btnGuardar.innerText = "📥 Guardar en mi Billetera";
+        btnGuardar.disabled = false;
+        btnGuardar.style.background = "#ff4d6d";
+
+        // 4. ¡FESTEJO! Sonido de confeti y animación
+        lanzarConfeti();
+
+        // Limpiar el detalle visual para la próxima vez
+        contenedorGalletas.style.opacity = "1";
+        contenedorGalletas.style.pointerEvents = "auto";
+    }, 400); 
+}
+
+// --- GUARDAR EN BILLETERA ---
+function guardarCupon() {
+    let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
+    
+    if (!guardados.includes(cuponActualTexto)) {
+        guardados.push(cuponActualTexto);
+        localStorage.setItem('misCuponesSofi', JSON.stringify(guardados));
+        
+        cargarCuponesGuardados();
+        
+        const btnGuardar = document.getElementById('btn-guardar');
+        btnGuardar.innerText = "¡Guardado! ✅";
+        btnGuardar.disabled = true;
+        btnGuardar.style.background = "#4ecdc4";
     }
 }
 
-/* Aplicamos la animación al contenedor del resultado cuando aparece */
-/* El selector :not(.hidden) significa "cuando NO esté oculto" */
-#cupon-resultado:not(.hidden) {
-    animation: expandirCupon 0.6s ease-out forwards;
+// --- CARGAR LISTA DE LA BILLETERA ---
+function cargarCuponesGuardados() {
+    let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
+    const contenedor = document.getElementById('lista-cupones');
+    
+    if (guardados.length === 0) {
+        contenedor.innerHTML = '<p style="color:#999; font-style:italic;">Aún no has guardado cupones...</p>';
+        return;
+    }
+
+    let html = '';
+    guardados.forEach((cupon, index) => {
+        html += `
+            <div class="mini-ticket">
+                <span>${cupon}</span>
+                <button class="btn-usar" onclick="abrirModal(${index})">Usar</button>
+            </div>
+        `;
+    });
+    contenedor.innerHTML = html;
 }
 
-/* Ajustamos un poco la animación del ticket interno para que se sincronice mejor */
-.ticket {
-    /* Aumentamos un poco el tiempo de la animación interna que ya tenías */
-    animation-duration: 0.7s; 
+// --- LÓGICA DEL CANJE (MODAL) ---
+function abrirModal(index) {
+    // Sonido de alerta al abrir
+    const sonidoAlerta = document.getElementById('sonido-alerta');
+    if (sonidoAlerta) {
+        sonidoAlerta.currentTime = 0;
+        sonidoAlerta.play();
+    }
+
+    indiceParaBorrar = index;
+    document.getElementById('modal-confirmacion').classList.remove('hidden');
+}
+
+function confirmarCanje() {
+    if (indiceParaBorrar !== null) {
+        let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
+        guardados.splice(indiceParaBorrar, 1);
+        localStorage.setItem('misCuponesSofi', JSON.stringify(guardados));
+        
+        cargarCuponesGuardados();
+        cerrarModal();
+        // Aquí no hay confeti ni ruidos para que no sea repetitivo
+    }
+}
+
+function cerrarModal() {
+    document.getElementById('modal-confirmacion').classList.add('hidden');
+    indiceParaBorrar = null;
+}
+
+// --- RESETEAR PARA OTRA GALLETA ---
+function resetGalletas() {
+    document.getElementById('galletas-flex').classList.remove('hidden');
+    document.getElementById('cupon-resultado').classList.add('hidden');
+}
+
+// --- FUNCIÓN DE CONFETI Y SONIDO DE ÉXITO ---
+function lanzarConfeti() {
+    const sonidoFestejo = document.getElementById('sonido-confeti');
+    if (sonidoFestejo) {
+        sonidoFestejo.currentTime = 0;
+        sonidoFestejo.play();
+    }
+
+    var count = 200;
+    var defaults = { origin: { y: 0.7 }, zIndex: 12000 };
+    function fire(particleRatio, opts) {
+        confetti(Object.assign({}, defaults, opts, {
+            particleCount: Math.floor(count * particleRatio)
+        }));
+    }
+    fire(0.25, { spread: 26, startVelocity: 55 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 120, startVelocity: 45 });
+}
+
+// --- BORRAR TODO EL HISTORIAL ---
+function borrarTodo() {
+    if(confirm("¿Segura que quieres borrar todo el historial?")) {
+        localStorage.removeItem('misCuponesSofi');
+        cargarCuponesGuardados();
+    }
 }
