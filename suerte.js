@@ -114,13 +114,16 @@ function cargarCuponesGuardados() {
 
 // --- LÓGICA DEL MODAL (VENTANA MÁGICA) ---
 function abrirModal(index) {
+    // 1. DISPARAR EL SONIDO DE ALERTA AL INSTANTE
+    const sonidoAlerta = document.getElementById('sonido-alerta');
+    if (sonidoAlerta) {
+        sonidoAlerta.currentTime = 0; // Lo reinicia para que suene siempre al picar
+        sonidoAlerta.play();
+    }
+
+    // 2. MOSTRAR LA VENTANA AL MISMO TIEMPO
     indiceParaBorrar = index;
     document.getElementById('modal-confirmacion').classList.remove('hidden');
-}
-
-function cerrarModal() {
-    document.getElementById('modal-confirmacion').classList.add('hidden');
-    indiceParaBorrar = null;
 }
 
 function confirmarCanje() {
