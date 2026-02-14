@@ -1,180 +1,65 @@
-// --- 1. LISTA DE CUPONES (19 opciones) ---
-const listaOriginal = [
-    "Una cita en el cine 🎬",
-    "Dejarte ganar en lo que sea (nee mi equipo) 🎮",
-    "Unos besitos 💋",
-    "Unos besotes 😘",
-    "Un abachito💞",
-    "Cita en cafetería ☕",
-    "Cita en el acuario 🐧",
-    "Un muamuamuamua 👄",
-    "Una cita a donde queya ✨",
-    "Eliminar al gallo de pelea 🐓🚫",
-    "Un ah ah ah ah 🔥",
-    "Tu y yo toda la eternidad ♾️",
-    "Evasión de pelea: repele la pelea y debemos amarnos mucho sisisis 🛡️💖",
-    "Vale por abachote 🫂",
-    "Comida favorita 🍔",
-    "Romper distancia entre nosotras yadiosmio testaño ✈️❤️",
-    "Ver una peli juntitas💖",
-    "Un masajito 💆",
-    "Una tarde juntitas 🌇"
-];
-
-// Variables de estado
-let disponibles = [];
-let cuponActualTexto = "";
-let indiceParaBorrar = null;
-
-// --- INICIALIZACIÓN ---
-document.addEventListener('DOMContentLoaded', () => {
-    cargarCuponesGuardados();
-    disponibles = [...listaOriginal]; // Llenar la baraja al inicio
-});
-
-// --- FUNCIÓN PRINCIPAL: REVELAR GALLETA ---
-function revelarCupon() {
-    // 1. Efecto visual instantáneo: las galletas se desvanecen un poco
-    const contenedorGalletas = document.getElementById('galletas-flex');
-    contenedorGalletas.style.opacity = "0.4";
-    contenedorGalletas.style.pointerEvents = "none"; // Evita que pique otra mientras carga
-
-    // 2. Sonido del CRACK instantáneo
-    const sonidoCrack = document.getElementById('sonido-galleta');
-    if (sonidoCrack) {
-        sonidoCrack.currentTime = 0;
-        sonidoCrack.play();
-    }
-
-    // 3. RETRASO MÁGICO (400ms) para la sorpresa
-    setTimeout(() => {
-        // Elegir cupón (evitando repetidos)
-        if (disponibles.length === 0) disponibles = [...listaOriginal];
-        const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
-        cuponActualTexto = disponibles[indiceAleatorio];
-        disponibles.splice(indiceAleatorio, 1);
-
-        // Actualizar interfaz
-        document.getElementById('texto-cupon').innerText = cuponActualTexto;
-        contenedorGalletas.classList.add('hidden');
-        document.getElementById('cupon-resultado').classList.remove('hidden');
-        
-        // Resetear botones
-        const btnGuardar = document.getElementById('btn-guardar');
-        btnGuardar.innerText = "📥 Guardar en mi Billetera";
-        btnGuardar.disabled = false;
-        btnGuardar.style.background = "#ff4d6d";
-
-        // 4. ¡FESTEJO! Sonido de confeti y animación
-        lanzarConfeti();
-
-        // Limpiar el detalle visual para la próxima vez
-        contenedorGalletas.style.opacity = "1";
-        contenedorGalletas.style.pointerEvents = "auto";
-    }, 400); 
+body {
+    background-image: url('fotos/fondo_magico.gif');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: #ffdde1;
+    font-family: 'Fredoka', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-// --- GUARDAR EN BILLETERA ---
-function guardarCupon() {
-    let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
-    
-    if (!guardados.includes(cuponActualTexto)) {
-        guardados.push(cuponActualTexto);
-        localStorage.setItem('misCuponesSofi', JSON.stringify(guardados));
-        
-        cargarCuponesGuardados();
-        
-        const btnGuardar = document.getElementById('btn-guardar');
-        btnGuardar.innerText = "¡Guardado! ✅";
-        btnGuardar.disabled = true;
-        btnGuardar.style.background = "#4ecdc4";
-    }
+.cuponera-container {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 30px 20px;
+    border-radius: 25px;
+    border: 4px solid #fff;
+    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+    width: 100%;
+    max-width: 380px;
+    margin-bottom: 30px;
+    z-index: 10;
 }
 
-// --- CARGAR LISTA DE LA BILLETERA ---
-function cargarCuponesGuardados() {
-    let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
-    const contenedor = document.getElementById('lista-cupones');
-    
-    if (guardados.length === 0) {
-        contenedor.innerHTML = '<p style="color:#999; font-style:italic;">Aún no has guardado cupones...</p>';
-        return;
-    }
+h1 { font-family: 'Pacifico', cursive; color: #ff4d6d; font-size: 2rem; margin: 0 0 10px 0; }
 
-    let html = '';
-    guardados.forEach((cupon, index) => {
-        html += `
-            <div class="mini-ticket">
-                <span>${cupon}</span>
-                <button class="btn-usar" onclick="abrirModal(${index})">Usar</button>
-            </div>
-        `;
-    });
-    contenedor.innerHTML = html;
+/* Galletas flotantes */
+#galletas-flex { display: flex; justify-content: space-around; margin: 20px 0; transition: opacity 0.3s; }
+.cookie { font-size: 65px; cursor: pointer; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+.cookie-wrapper { animation: flotar 3s ease-in-out infinite; }
+@keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* Animación de Expansión del Cupón */
+@keyframes expandirCupon {
+    0% { opacity: 0; transform: scale(0.5) translateY(30px); }
+    70% { transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
 }
+#cupon-resultado:not(.hidden) { animation: expandirCupon 0.6s ease-out forwards; }
 
-// --- LÓGICA DEL CANJE (MODAL) ---
-function abrirModal(index) {
-    // Sonido de alerta al abrir
-    const sonidoAlerta = document.getElementById('sonido-alerta');
-    if (sonidoAlerta) {
-        sonidoAlerta.currentTime = 0;
-        sonidoAlerta.play();
-    }
+.ticket { background: #ff4d6d; color: white; padding: 5px; border-radius: 15px; margin: 20px auto; transform: rotate(-1deg); box-shadow: 0 8px 20px rgba(255, 77, 109, 0.3); }
+.ticket-content { border: 2px dashed rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 20px; background: #ff4d6d; }
 
-    indiceParaBorrar = index;
-    document.getElementById('modal-confirmacion').classList.remove('hidden');
-}
+/* Botones */
+.botones-accion { display: flex; flex-direction: column; gap: 10px; }
+.btn-guardar, .btn-confirmar { background: #ff4d6d; color: white; border: none; padding: 12px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+.btn-reset { background: white; color: #ff4d6d; border: 2px solid #ffb3c1; padding: 10px; border-radius: 50px; font-weight: bold; cursor: pointer; }
 
-function confirmarCanje() {
-    if (indiceParaBorrar !== null) {
-        let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
-        guardados.splice(indiceParaBorrar, 1);
-        localStorage.setItem('misCuponesSofi', JSON.stringify(guardados));
-        
-        cargarCuponesGuardados();
-        cerrarModal();
-        // Aquí no hay confeti ni ruidos para que no sea repetitivo
-    }
-}
+/* Billetera */
+.billetera-container { background: rgba(255, 255, 255, 0.8); width: 100%; max-width: 380px; padding: 20px; border-radius: 20px; margin-bottom: 50px; }
+.mini-ticket { background: white; border-left: 5px solid #ff4d6d; padding: 12px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+.btn-usar { background: #ff4d6d; color: white; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
 
-function cerrarModal() {
-    document.getElementById('modal-confirmacion').classList.add('hidden');
-    indiceParaBorrar = null;
-}
+/* Modal */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px); }
+.modal-content { background: white; padding: 25px; border-radius: 25px; text-align: center; max-width: 85%; width: 320px; border: 4px solid #ffb3c1; }
+.modal-gif { width: 100%; max-width: 180px; border-radius: 15px; margin-bottom: 15px; }
 
-// --- RESETEAR PARA OTRA GALLETA ---
-function resetGalletas() {
-    document.getElementById('galletas-flex').classList.remove('hidden');
-    document.getElementById('cupon-resultado').classList.add('hidden');
-}
-
-// --- FUNCIÓN DE CONFETI Y SONIDO DE ÉXITO ---
-function lanzarConfeti() {
-    const sonidoFestejo = document.getElementById('sonido-confeti');
-    if (sonidoFestejo) {
-        sonidoFestejo.currentTime = 0;
-        sonidoFestejo.play();
-    }
-
-    var count = 200;
-    var defaults = { origin: { y: 0.7 }, zIndex: 12000 };
-    function fire(particleRatio, opts) {
-        confetti(Object.assign({}, defaults, opts, {
-            particleCount: Math.floor(count * particleRatio)
-        }));
-    }
-    fire(0.25, { spread: 26, startVelocity: 55 });
-    fire(0.2, { spread: 60 });
-    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-    fire(0.1, { spread: 120, startVelocity: 45 });
-}
-
-// --- BORRAR TODO EL HISTORIAL ---
-function borrarTodo() {
-    if(confirm("¿Segura que quieres borrar todo el historial?")) {
-        localStorage.removeItem('misCuponesSofi');
-        cargarCuponesGuardados();
-    }
-}
+.hidden { display: none !important; }
