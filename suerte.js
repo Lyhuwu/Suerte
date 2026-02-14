@@ -1,4 +1,4 @@
-// --- 1. LISTA DE CUPONES ---
+// --- 1. LISTA DE CUPONES (19 opciones) ---
 const listaOriginal = [
     "Una cita en el cine 🎬",
     "Dejarte ganar en lo que sea (nee mi equipo) 🎮",
@@ -21,47 +21,60 @@ const listaOriginal = [
     "Una tarde juntitas 🌇"
 ];
 
+// Variables de estado
 let disponibles = [];
 let cuponActualTexto = "";
 let indiceParaBorrar = null;
 
+// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
     cargarCuponesGuardados();
-    disponibles = [...listaOriginal];
+    disponibles = [...listaOriginal]; // Llenar la baraja al inicio
 });
 
-// --- FUNCIÓN: REVELAR GALLETA (¡AQUÍ ES LA FIESTA!) ---
+// --- FUNCIÓN PRINCIPAL: REVELAR GALLETA ---
 function revelarCupon() {
-    // 1. Sonido del crack
+    // 1. Efecto visual instantáneo: las galletas se desvanecen un poco
+    const contenedorGalletas = document.getElementById('galletas-flex');
+    contenedorGalletas.style.opacity = "0.4";
+    contenedorGalletas.style.pointerEvents = "none"; // Evita que pique otra mientras carga
+
+    // 2. Sonido del CRACK instantáneo
     const sonidoCrack = document.getElementById('sonido-galleta');
     if (sonidoCrack) {
         sonidoCrack.currentTime = 0;
         sonidoCrack.play();
     }
 
-    // 2. Lógica del cupón
-    if (disponibles.length === 0) disponibles = [...listaOriginal];
-    const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
-    cuponActualTexto = disponibles[indiceAleatorio];
-    disponibles.splice(indiceAleatorio, 1);
+    // 3. RETRASO MÁGICO (400ms) para la sorpresa
+    setTimeout(() => {
+        // Elegir cupón (evitando repetidos)
+        if (disponibles.length === 0) disponibles = [...listaOriginal];
+        const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
+        cuponActualTexto = disponibles[indiceAleatorio];
+        disponibles.splice(indiceAleatorio, 1);
 
-    // 3. Mostrar el resultado
-    document.getElementById('texto-cupon').innerText = cuponActualTexto;
-    document.getElementById('galletas-flex').classList.add('hidden');
-    // Al quitar 'hidden', se activará la animación CSS
-    document.getElementById('cupon-resultado').classList.remove('hidden');
-    
-    // Resetear botón guardar
-    const btnGuardar = document.getElementById('btn-guardar');
-    btnGuardar.innerText = "📥 Guardar en mi Billetera";
-    btnGuardar.disabled = false;
-    btnGuardar.style.background = "#ff4d6d";
+        // Actualizar interfaz
+        document.getElementById('texto-cupon').innerText = cuponActualTexto;
+        contenedorGalletas.classList.add('hidden');
+        document.getElementById('cupon-resultado').classList.remove('hidden');
+        
+        // Resetear botones
+        const btnGuardar = document.getElementById('btn-guardar');
+        btnGuardar.innerText = "📥 Guardar en mi Billetera";
+        btnGuardar.disabled = false;
+        btnGuardar.style.background = "#ff4d6d";
 
-    // 4. ¡LANZAR CONFETI Y SONIDO DE FESTEJO AHORA!
-    lanzarConfeti();
+        // 4. ¡FESTEJO! Sonido de confeti y animación
+        lanzarConfeti();
+
+        // Limpiar el detalle visual para la próxima vez
+        contenedorGalletas.style.opacity = "1";
+        contenedorGalletas.style.pointerEvents = "auto";
+    }, 400); 
 }
 
-// --- FUNCIÓN: GUARDAR EN BILLETERA (Solo guarda, sin fiesta extra) ---
+// --- GUARDAR EN BILLETERA ---
 function guardarCupon() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
     
@@ -78,6 +91,7 @@ function guardarCupon() {
     }
 }
 
+// --- CARGAR LISTA DE LA BILLETERA ---
 function cargarCuponesGuardados() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
     const contenedor = document.getElementById('lista-cupones');
@@ -99,8 +113,9 @@ function cargarCuponesGuardados() {
     contenedor.innerHTML = html;
 }
 
-// --- MODAL: Alerta al abrir, silencio al cerrar ---
+// --- LÓGICA DEL CANJE (MODAL) ---
 function abrirModal(index) {
+    // Sonido de alerta al abrir
     const sonidoAlerta = document.getElementById('sonido-alerta');
     if (sonidoAlerta) {
         sonidoAlerta.currentTime = 0;
@@ -119,6 +134,7 @@ function confirmarCanje() {
         
         cargarCuponesGuardados();
         cerrarModal();
+        // Aquí no hay confeti ni ruidos para que no sea repetitivo
     }
 }
 
@@ -127,14 +143,14 @@ function cerrarModal() {
     indiceParaBorrar = null;
 }
 
+// --- RESETEAR PARA OTRA GALLETA ---
 function resetGalletas() {
     document.getElementById('galletas-flex').classList.remove('hidden');
     document.getElementById('cupon-resultado').classList.add('hidden');
 }
 
-// --- FUNCIÓN DE CONFETI (Con su sonido incorporado) ---
+// --- FUNCIÓN DE CONFETI Y SONIDO DE ÉXITO ---
 function lanzarConfeti() {
-    // Sonido de festejo (TADA/CHIME)
     const sonidoFestejo = document.getElementById('sonido-confeti');
     if (sonidoFestejo) {
         sonidoFestejo.currentTime = 0;
@@ -155,6 +171,7 @@ function lanzarConfeti() {
     fire(0.1, { spread: 120, startVelocity: 45 });
 }
 
+// --- BORRAR TODO EL HISTORIAL ---
 function borrarTodo() {
     if(confirm("¿Segura que quieres borrar todo el historial?")) {
         localStorage.removeItem('misCuponesSofi');
