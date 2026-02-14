@@ -30,31 +30,38 @@ document.addEventListener('DOMContentLoaded', () => {
     disponibles = [...listaOriginal];
 });
 
-// --- REVELAR: Solo sonido de crack ---
+// --- FUNCIÓN: REVELAR GALLETA (¡AQUÍ ES LA FIESTA!) ---
 function revelarCupon() {
+    // 1. Sonido del crack
     const sonidoCrack = document.getElementById('sonido-galleta');
     if (sonidoCrack) {
         sonidoCrack.currentTime = 0;
         sonidoCrack.play();
     }
 
+    // 2. Lógica del cupón
     if (disponibles.length === 0) disponibles = [...listaOriginal];
-
     const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
     cuponActualTexto = disponibles[indiceAleatorio];
     disponibles.splice(indiceAleatorio, 1);
 
+    // 3. Mostrar el resultado
     document.getElementById('texto-cupon').innerText = cuponActualTexto;
     document.getElementById('galletas-flex').classList.add('hidden');
+    // Al quitar 'hidden', se activará la animación CSS
     document.getElementById('cupon-resultado').classList.remove('hidden');
     
+    // Resetear botón guardar
     const btnGuardar = document.getElementById('btn-guardar');
     btnGuardar.innerText = "📥 Guardar en mi Billetera";
     btnGuardar.disabled = false;
     btnGuardar.style.background = "#ff4d6d";
+
+    // 4. ¡LANZAR CONFETI Y SONIDO DE FESTEJO AHORA!
+    lanzarConfeti();
 }
 
-// --- GUARDAR: Aquí es donde sale el CONFETI y su SONIDO ---
+// --- FUNCIÓN: GUARDAR EN BILLETERA (Solo guarda, sin fiesta extra) ---
 function guardarCupon() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
     
@@ -64,9 +71,6 @@ function guardarCupon() {
         
         cargarCuponesGuardados();
         
-        // LANZAR FESTEJO SOLO AQUÍ
-        lanzarConfeti(); 
-
         const btnGuardar = document.getElementById('btn-guardar');
         btnGuardar.innerText = "¡Guardado! ✅";
         btnGuardar.disabled = true;
@@ -115,7 +119,6 @@ function confirmarCanje() {
         
         cargarCuponesGuardados();
         cerrarModal();
-        // Eliminado lanzarConfeti() de aquí para que no salga al borrar
     }
 }
 
@@ -131,6 +134,7 @@ function resetGalletas() {
 
 // --- FUNCIÓN DE CONFETI (Con su sonido incorporado) ---
 function lanzarConfeti() {
+    // Sonido de festejo (TADA/CHIME)
     const sonidoFestejo = document.getElementById('sonido-confeti');
     if (sonidoFestejo) {
         sonidoFestejo.currentTime = 0;
