@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Prueba tu suerte✨</title>
+    <title>La Suerte de Sofi ✨</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <audio id="sonido-galleta" src="fotos/crack.wav" preload="auto"></audio>
+
     <div class="cuponera-container">
         <h1>✨ Tu Suerte de Hoy ✨</h1>
-        <p class="instrucciones">Elige una galleta para descubrirla:</p>
+        <p class="instrucciones">Elige una galleta para descubrir tu premio:</p>
         
         <div id="galletas-flex">
             <div class="cookie-wrapper" onclick="revelarCupon()">
@@ -31,40 +33,34 @@
                     <p class="ticket-header">🎟️ VÁLIDO POR:</p>
                     <h3 id="texto-cupon"></h3>
                     <div class="linea-punteada"></div>
-                    <p class="ticket-footer">Canjable en cuanto quieras<3</p>
+                    <p class="ticket-footer">❤️ Canjeable con tu equipo favorito ❤️</p>
                 </div>
             </div>
             
             <div class="botones-accion">
-                <button id="btn-guardar" class="btn-guardar" onclick="guardarCupon()">📥 Guardar en mi Billetera para usar después</button>
+                <button id="btn-guardar" class="btn-guardar" onclick="guardarCupon()">📥 Guardar en mi Billetera</button>
                 <button class="btn-reset" onclick="resetGalletas()">Probar suerte otra vez</button>
             </div>
         </div>
     </div>
 
     <div class="billetera-container">
-        <h2>👛 Mis cupones guardados</h2>
-        <div id="lista-cupones">
-            </div>
-        
+        <h2>👛 Mis Cupones Guardados</h2>
+        <div id="lista-cupones"></div>
         <p style="text-align: center; margin-top: 20px;">
-            <button class="btn-borrar-todo" onclick="borrarTodo()">🗑️ Borrar cupones</button>
+            <button class="btn-borrar-todo" onclick="borrarTodo()">🗑️ Borrar historial</button>
         </p>
     </div>
 
     <div id="modal-confirmacion" class="modal-overlay hidden">
         <div class="modal-content">
-            <img src="fotos/hey.gif" alt="Abrazo" class="modal-gif">
-            
+            <img src="fotos/tu-gif-de-gatitos.gif" alt="Abrazo" class="modal-gif">
             <h3>⚠️ ¡Espera un poquito!</h3>
             <p class="modal-texto">
                 Para hacerlo válido, <b>tómale captura</b> 📸 y mándamela.
                 <br><br>
                 Recuerda que una vez que le des a "Confirmar", desaparecerá de tu billetera.
-                <br>
-                <small>(Pero puedes volver mañana por más muamuamua)</small>
             </p>
-
             <div class="modal-botones">
                 <button class="btn-confirmar" onclick="confirmarCanje()">¡Ya tomé la foto! ✅</button>
                 <button class="btn-cancelar" onclick="cerrarModal()">Cancelar ❌</button>
