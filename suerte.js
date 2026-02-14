@@ -21,49 +21,40 @@ const listaOriginal = [
     "Una tarde juntitas 🌇"
 ];
 
-// Variables de estado
 let disponibles = [];
 let cuponActualTexto = "";
 let indiceParaBorrar = null;
 
-// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
     cargarCuponesGuardados();
     disponibles = [...listaOriginal];
 });
 
-// --- FUNCIÓN: REVELAR GALLETA ---
+// --- REVELAR: Solo sonido de crack ---
 function revelarCupon() {
-    // Sonido del crack
     const sonidoCrack = document.getElementById('sonido-galleta');
     if (sonidoCrack) {
         sonidoCrack.currentTime = 0;
         sonidoCrack.play();
     }
 
-    if (disponibles.length === 0) {
-        disponibles = [...listaOriginal];
-    }
+    if (disponibles.length === 0) disponibles = [...listaOriginal];
 
     const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
     cuponActualTexto = disponibles[indiceAleatorio];
     disponibles.splice(indiceAleatorio, 1);
 
-    // Mostrar ticket
     document.getElementById('texto-cupon').innerText = cuponActualTexto;
     document.getElementById('galletas-flex').classList.add('hidden');
     document.getElementById('cupon-resultado').classList.remove('hidden');
     
-    // Resetear botón guardar
     const btnGuardar = document.getElementById('btn-guardar');
     btnGuardar.innerText = "📥 Guardar en mi Billetera";
     btnGuardar.disabled = false;
-    btnGuardar.style.background = "#ff8fa3";
-
-    lanzarConfeti();
+    btnGuardar.style.background = "#ff4d6d";
 }
 
-// --- FUNCIÓN: GUARDAR EN BILLETERA ---
+// --- GUARDAR: Aquí es donde sale el CONFETI y su SONIDO ---
 function guardarCupon() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
     
@@ -73,16 +64,16 @@ function guardarCupon() {
         
         cargarCuponesGuardados();
         
+        // LANZAR FESTEJO SOLO AQUÍ
+        lanzarConfeti(); 
+
         const btnGuardar = document.getElementById('btn-guardar');
         btnGuardar.innerText = "¡Guardado! ✅";
         btnGuardar.disabled = true;
         btnGuardar.style.background = "#4ecdc4";
-    } else {
-        alert("¡Ya tienes este cupón guardado! 😉");
     }
 }
 
-// --- FUNCIÓN: CARGAR BILLETERA ---
 function cargarCuponesGuardados() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
     const contenedor = document.getElementById('lista-cupones');
@@ -104,10 +95,8 @@ function cargarCuponesGuardados() {
     contenedor.innerHTML = html;
 }
 
-// --- LÓGICA DEL MODAL (CANJE) ---
-
+// --- MODAL: Alerta al abrir, silencio al cerrar ---
 function abrirModal(index) {
-    // Sonido de alerta simultáneo
     const sonidoAlerta = document.getElementById('sonido-alerta');
     if (sonidoAlerta) {
         sonidoAlerta.currentTime = 0;
@@ -121,14 +110,12 @@ function abrirModal(index) {
 function confirmarCanje() {
     if (indiceParaBorrar !== null) {
         let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
-        
-        // Borrar el cupón seleccionado
         guardados.splice(indiceParaBorrar, 1);
         localStorage.setItem('misCuponesSofi', JSON.stringify(guardados));
         
         cargarCuponesGuardados();
         cerrarModal();
-        lanzarConfeti();
+        // Eliminado lanzarConfeti() de aquí para que no salga al borrar
     }
 }
 
@@ -137,15 +124,13 @@ function cerrarModal() {
     indiceParaBorrar = null;
 }
 
-// --- UTILIDADES ---
-
 function resetGalletas() {
     document.getElementById('galletas-flex').classList.remove('hidden');
     document.getElementById('cupon-resultado').classList.add('hidden');
 }
 
+// --- FUNCIÓN DE CONFETI (Con su sonido incorporado) ---
 function lanzarConfeti() {
-    // Sonido de confeti
     const sonidoFestejo = document.getElementById('sonido-confeti');
     if (sonidoFestejo) {
         sonidoFestejo.currentTime = 0;
@@ -154,13 +139,11 @@ function lanzarConfeti() {
 
     var count = 200;
     var defaults = { origin: { y: 0.7 }, zIndex: 12000 };
-
     function fire(particleRatio, opts) {
         confetti(Object.assign({}, defaults, opts, {
             particleCount: Math.floor(count * particleRatio)
         }));
     }
-
     fire(0.25, { spread: 26, startVelocity: 55 });
     fire(0.2, { spread: 60 });
     fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
@@ -169,7 +152,7 @@ function lanzarConfeti() {
 }
 
 function borrarTodo() {
-    if(confirm("¿Segura que quieres borrar todo el historial de cupones?")) {
+    if(confirm("¿Segura que quieres borrar todo el historial?")) {
         localStorage.removeItem('misCuponesSofi');
         cargarCuponesGuardados();
     }
