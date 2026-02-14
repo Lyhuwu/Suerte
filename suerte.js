@@ -147,6 +147,13 @@ function borrarTodo() {
 
 // --- EFECTOS VISUALES ---
 function lanzarConfeti() {
+    // REPRODUCIR SONIDO DE CELEBRACIÓN
+    const sonidoFestejo = document.getElementById('sonido-confeti');
+    if (sonidoFestejo) {
+        sonidoFestejo.currentTime = 0;
+        sonidoFestejo.play();
+    }
+
     var count = 200;
     var defaults = { origin: { y: 0.7 }, zIndex: 12000 };
 
