@@ -1,4 +1,4 @@
-// --- 1. TU LISTA PERSONALIZADA ---
+// --- 1. LISTA DE CUPONES ---
 const listaOriginal = [
     "Una cita en el cine 🎬",
     "Dejarte ganar en lo que sea (nee mi equipo) 🎮",
@@ -32,28 +32,25 @@ document.addEventListener('DOMContentLoaded', () => {
     disponibles = [...listaOriginal];
 });
 
-// --- FUNCIONES DEL JUEGO ---
+// --- FUNCIÓN: REVELAR GALLETA ---
 function revelarCupon() {
-    // REPRODUCIR SONIDO
-    const sonido = document.getElementById('sonido-galleta');
-    if (sonido) {
-        sonido.currentTime = 0;
-        sonido.play();
+    // Sonido del crack
+    const sonidoCrack = document.getElementById('sonido-galleta');
+    if (sonidoCrack) {
+        sonidoCrack.currentTime = 0;
+        sonidoCrack.play();
     }
 
-    // Si se acaban, rellenamos
     if (disponibles.length === 0) {
         disponibles = [...listaOriginal];
     }
 
-    // Elegir al azar y quitar de disponibles
     const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
-    const fraseGanadora = disponibles[indiceAleatorio];
-    cuponActualTexto = fraseGanadora;
+    cuponActualTexto = disponibles[indiceAleatorio];
     disponibles.splice(indiceAleatorio, 1);
 
-    // Mostrar
-    document.getElementById('texto-cupon').innerText = fraseGanadora;
+    // Mostrar ticket
+    document.getElementById('texto-cupon').innerText = cuponActualTexto;
     document.getElementById('galletas-flex').classList.add('hidden');
     document.getElementById('cupon-resultado').classList.remove('hidden');
     
@@ -66,12 +63,7 @@ function revelarCupon() {
     lanzarConfeti();
 }
 
-function resetGalletas() {
-    document.getElementById('galletas-flex').classList.remove('hidden');
-    document.getElementById('cupon-resultado').classList.add('hidden');
-}
-
-// --- BILLETERA (LOCALSTORAGE) ---
+// --- FUNCIÓN: GUARDAR EN BILLETERA ---
 function guardarCupon() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
     
@@ -81,7 +73,6 @@ function guardarCupon() {
         
         cargarCuponesGuardados();
         
-        // Feedback visual
         const btnGuardar = document.getElementById('btn-guardar');
         btnGuardar.innerText = "¡Guardado! ✅";
         btnGuardar.disabled = true;
@@ -91,6 +82,7 @@ function guardarCupon() {
     }
 }
 
+// --- FUNCIÓN: CARGAR BILLETERA ---
 function cargarCuponesGuardados() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
     const contenedor = document.getElementById('lista-cupones');
@@ -112,16 +104,16 @@ function cargarCuponesGuardados() {
     contenedor.innerHTML = html;
 }
 
-// --- LÓGICA DEL MODAL (VENTANA MÁGICA) ---
+// --- LÓGICA DEL MODAL (CANJE) ---
+
 function abrirModal(index) {
-    // 1. DISPARAR EL SONIDO DE ALERTA AL INSTANTE
+    // Sonido de alerta simultáneo
     const sonidoAlerta = document.getElementById('sonido-alerta');
     if (sonidoAlerta) {
-        sonidoAlerta.currentTime = 0; // Lo reinicia para que suene siempre al picar
+        sonidoAlerta.currentTime = 0;
         sonidoAlerta.play();
     }
 
-    // 2. MOSTRAR LA VENTANA AL MISMO TIEMPO
     indiceParaBorrar = index;
     document.getElementById('modal-confirmacion').classList.remove('hidden');
 }
@@ -130,27 +122,30 @@ function confirmarCanje() {
     if (indiceParaBorrar !== null) {
         let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
         
-        // Borrar el cupón
+        // Borrar el cupón seleccionado
         guardados.splice(indiceParaBorrar, 1);
         localStorage.setItem('misCuponesSofi', JSON.stringify(guardados));
         
         cargarCuponesGuardados();
         cerrarModal();
-        
         lanzarConfeti();
     }
 }
 
-function borrarTodo() {
-    if(confirm("¿Segura que quieres borrar todo el historial?")) {
-        localStorage.removeItem('misCuponesSofi');
-        cargarCuponesGuardados();
-    }
+function cerrarModal() {
+    document.getElementById('modal-confirmacion').classList.add('hidden');
+    indiceParaBorrar = null;
 }
 
-// --- EFECTOS VISUALES ---
+// --- UTILIDADES ---
+
+function resetGalletas() {
+    document.getElementById('galletas-flex').classList.remove('hidden');
+    document.getElementById('cupon-resultado').classList.add('hidden');
+}
+
 function lanzarConfeti() {
-    // REPRODUCIR SONIDO DE CELEBRACIÓN
+    // Sonido de confeti
     const sonidoFestejo = document.getElementById('sonido-confeti');
     if (sonidoFestejo) {
         sonidoFestejo.currentTime = 0;
@@ -171,4 +166,11 @@ function lanzarConfeti() {
     fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
     fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
     fire(0.1, { spread: 120, startVelocity: 45 });
+}
+
+function borrarTodo() {
+    if(confirm("¿Segura que quieres borrar todo el historial de cupones?")) {
+        localStorage.removeItem('misCuponesSofi');
+        cargarCuponesGuardados();
+    }
 }
