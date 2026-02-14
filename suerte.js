@@ -1,50 +1,63 @@
+// --- 1. TU LISTA PERSONALIZADA ---
 const listaOriginal = [
     "Una cita en el cine 🎬",
     "Dejarte ganar en lo que sea (nee mi equipo) 🎮",
     "Unos besitos 💋",
     "Unos besotes 😘",
     "Un abachito💞",
-    "Cita en cafetería",
+    "Cita en cafetería ☕",
     "Cita en el acuario 🐧",
     "Un muamuamuamua 👄",
-    "Una cita a donde queya",
-    "Eliminar al gallo de pelea",
+    "Una cita a donde queya ✨",
+    "Eliminar al gallo de pelea 🐓🚫",
     "Un ah ah ah ah 🔥",
-    "Tu y yo toda le eternidad",
+    "Tu y yo toda la eternidad ♾️",
     "Evasión de pelea: repele la pelea y debemos amarnos mucho sisisis 🛡️💖",
     "Vale por abachote 🫂",
     "Comida favorita 🍔",
-    "Romper distancia entre nosotras yadiosmio testaño",
+    "Romper distancia entre nosotras yadiosmio testaño ✈️❤️",
     "Ver una peli juntitas💖",
     "Un masajito 💆",
-    "Una tarde juntitas"
+    "Una tarde juntitas 🌇"
 ];
 
+// Variables de estado
 let disponibles = [];
 let cuponActualTexto = "";
 let indiceParaBorrar = null;
 
+// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
     cargarCuponesGuardados();
     disponibles = [...listaOriginal];
 });
 
+// --- FUNCIONES DEL JUEGO ---
 function revelarCupon() {
     // REPRODUCIR SONIDO
     const sonido = document.getElementById('sonido-galleta');
-    sonido.currentTime = 0; // Reinicia el audio si se toca rápido
-    sonido.play();
+    if (sonido) {
+        sonido.currentTime = 0;
+        sonido.play();
+    }
 
-    if (disponibles.length === 0) disponibles = [...listaOriginal];
-    
+    // Si se acaban, rellenamos
+    if (disponibles.length === 0) {
+        disponibles = [...listaOriginal];
+    }
+
+    // Elegir al azar y quitar de disponibles
     const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
-    cuponActualTexto = disponibles[indiceAleatorio];
+    const fraseGanadora = disponibles[indiceAleatorio];
+    cuponActualTexto = fraseGanadora;
     disponibles.splice(indiceAleatorio, 1);
 
-    document.getElementById('texto-cupon').innerText = cuponActualTexto;
+    // Mostrar
+    document.getElementById('texto-cupon').innerText = fraseGanadora;
     document.getElementById('galletas-flex').classList.add('hidden');
     document.getElementById('cupon-resultado').classList.remove('hidden');
-
+    
+    // Resetear botón guardar
     const btnGuardar = document.getElementById('btn-guardar');
     btnGuardar.innerText = "📥 Guardar en mi Billetera";
     btnGuardar.disabled = false;
@@ -53,33 +66,53 @@ function revelarCupon() {
     lanzarConfeti();
 }
 
+function resetGalletas() {
+    document.getElementById('galletas-flex').classList.remove('hidden');
+    document.getElementById('cupon-resultado').classList.add('hidden');
+}
+
+// --- BILLETERA (LOCALSTORAGE) ---
 function guardarCupon() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
+    
     if (!guardados.includes(cuponActualTexto)) {
         guardados.push(cuponActualTexto);
         localStorage.setItem('misCuponesSofi', JSON.stringify(guardados));
+        
         cargarCuponesGuardados();
+        
+        // Feedback visual
         const btnGuardar = document.getElementById('btn-guardar');
         btnGuardar.innerText = "¡Guardado! ✅";
         btnGuardar.disabled = true;
         btnGuardar.style.background = "#4ecdc4";
+    } else {
+        alert("¡Ya tienes este cupón guardado! 😉");
     }
 }
 
 function cargarCuponesGuardados() {
     let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
     const contenedor = document.getElementById('lista-cupones');
+    
     if (guardados.length === 0) {
         contenedor.innerHTML = '<p style="color:#999; font-style:italic;">Aún no has guardado cupones...</p>';
         return;
     }
+
     let html = '';
     guardados.forEach((cupon, index) => {
-        html += `<div class="mini-ticket"><span>${cupon}</span><button class="btn-usar" onclick="abrirModal(${index})">Usar</button></div>`;
+        html += `
+            <div class="mini-ticket">
+                <span>${cupon}</span>
+                <button class="btn-usar" onclick="abrirModal(${index})">Usar</button>
+            </div>
+        `;
     });
     contenedor.innerHTML = html;
 }
 
+// --- LÓGICA DEL MODAL (VENTANA MÁGICA) ---
 function abrirModal(index) {
     indiceParaBorrar = index;
     document.getElementById('modal-confirmacion').classList.remove('hidden');
@@ -93,32 +126,16 @@ function cerrarModal() {
 function confirmarCanje() {
     if (indiceParaBorrar !== null) {
         let guardados = JSON.parse(localStorage.getItem('misCuponesSofi')) || [];
+        
+        // Borrar el cupón
         guardados.splice(indiceParaBorrar, 1);
         localStorage.setItem('misCuponesSofi', JSON.stringify(guardados));
+        
         cargarCuponesGuardados();
         cerrarModal();
+        
         lanzarConfeti();
     }
-}
-
-function resetGalletas() {
-    document.getElementById('galletas-flex').classList.remove('hidden');
-    document.getElementById('cupon-resultado').classList.add('hidden');
-}
-
-function lanzarConfeti() {
-    var count = 200;
-    var defaults = { origin: { y: 0.7 }, zIndex: 12000 };
-    function fire(particleRatio, opts) {
-        confetti(Object.assign({}, defaults, opts, {
-            particleCount: Math.floor(count * particleRatio)
-        }));
-    }
-    fire(0.25, { spread: 26, startVelocity: 55 });
-    fire(0.2, { spread: 60 });
-    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-    fire(0.1, { spread: 120, startVelocity: 45 });
 }
 
 function borrarTodo() {
@@ -126,4 +143,22 @@ function borrarTodo() {
         localStorage.removeItem('misCuponesSofi');
         cargarCuponesGuardados();
     }
+}
+
+// --- EFECTOS VISUALES ---
+function lanzarConfeti() {
+    var count = 200;
+    var defaults = { origin: { y: 0.7 }, zIndex: 12000 };
+
+    function fire(particleRatio, opts) {
+        confetti(Object.assign({}, defaults, opts, {
+            particleCount: Math.floor(count * particleRatio)
+        }));
+    }
+
+    fire(0.25, { spread: 26, startVelocity: 55 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 120, startVelocity: 45 });
 }
